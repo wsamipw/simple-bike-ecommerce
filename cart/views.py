@@ -29,7 +29,7 @@ def bike_view(request, id=None):
 
 @login_required(login_url='/admin/login/')
 def add_to_cart(request):
-    carts = UserCart.objects.filter(user=request.user)
+
     if request.method == 'POST':
         form = UserCartForm(request.POST)
         if form.is_valid():
@@ -42,8 +42,13 @@ def add_to_cart(request):
                 request, 'You have successfully added your items in cart')
         else:
             messages.error(request, 'Error adding to cart')
+    carts = UserCart.objects.filter(user=request.user)
+    total = 0
+    for item in carts:
+        total += item.bike.price * item.quantity
     context = {
-        'carts': carts
+        'carts': carts,
+        'total': total
     }
     return render(request, 'cart/add_to_cart.html', context)
 
